@@ -13,7 +13,7 @@ maxim_ds18b20/
       |__ ds18b20.c
       |__ ds18b20_stm32f429xx_port.c
 ```
-### Ejemplo
+### Ejemplo con STM32F429
 ```c
 #include "ds18b20_stm32f429xx_port.h"
 
@@ -29,4 +29,45 @@ float current_temperature;
 if (ds18b20_get_temperature_port(&current_temperature) == DS18B20_OK) printf("%f", current_temperature);
 /* Si hubo algun error */
 else printf("Error")
+```
+### Ejemplo con gcc
+```c
+#include "ds18b20.h"
+#include <stdio.h>
+
+void pulldown(void* bus)
+{
+    printf("..");
+}
+
+void release(void* bus)
+{
+    printf("||");
+}
+
+bool_t read(void* bus)
+{
+    return true;
+}
+
+void delay(uint16_t delay)
+{
+    //do nothing
+}
+
+int main(void)
+{
+    oneWire_t oneWire;
+    oneWire.oneWireBus_pulldown = pulldown;
+    oneWire.oneWireBus_release = release;
+    oneWire.oneWireBus_read = read;
+    oneWire.delay_us = delay;
+    oneWire.oneWireBus = 0;
+
+
+    ds18b20_is_present(&oneWire);
+    ds18b20_get_temperature(&oneWire);
+
+    return 0;
+}
 ```
